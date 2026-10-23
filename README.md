@@ -40,3 +40,19 @@ Run the tests: `npm test`.
 | GET | /summary | `totalLent`, `totalRepaid`, `overdueAmount` |
 
 A loan is **overdue** when it is not repaid and the due date is before today.
+
+## Mobile app (React Native with Expo)
+
+The app is in `mobile/`. It talks to the backend over Wi-Fi, so the phone and the computer must be on the same network.
+
+1. Start the backend (see above) and keep its window open: the demo login code is printed there.
+2. Put the computer's Wi-Fi address in `mobile/src/config.ts` (find it with `ipconfig getifaddr en0`).
+3. In another terminal:
+   ```bash
+   cd mobile
+   npm install
+   npx expo start
+   ```
+4. Install **Expo Go** on the phone, scan the QR code, and log in with a phone number. Read the 6 digit code in the backend window.
+
+Screens: login (phone and code), then one screen with the summary card (lent, repaid, overdue), an add-loan form and the list of loans. Overdue loans are red. Tap "Mark repaid" to close a loan. Pull down to refresh.
