@@ -46,6 +46,9 @@ export function createApp() {
   // One place that turns errors into JSON answers.
   app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
     if (err instanceof HttpError) return void res.status(err.status).json({ error: err.message });
+    // Express's own errors (for example a request body that is not valid JSON) carry a 4xx status.
+    const status = (err as { status?: number }).status;
+    if (status && status >= 400 && status < 500) return void res.status(status).json({ error: "invalid request" });
     console.error(err);
     res.status(500).json({ error: "something went wrong" });
   });

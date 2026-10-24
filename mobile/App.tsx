@@ -1,11 +1,9 @@
 import { StatusBar } from "expo-status-bar";
-import * as SecureStore from "expo-secure-store";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import LoansScreen from "./src/LoansScreen";
 import LoginScreen from "./src/LoginScreen";
-
-const TOKEN_KEY = "miniledger_token";
+import { clearToken, loadToken, saveToken } from "./src/tokenStore";
 
 export default function App() {
   const [token, setToken] = useState<string | null>(null);
@@ -13,19 +11,19 @@ export default function App() {
 
   // On start, reuse the saved token so the user does not log in every time.
   useEffect(() => {
-    SecureStore.getItemAsync(TOKEN_KEY)
+    loadToken()
       .then(setToken)
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 
   const login = useCallback(async (t: string) => {
-    await SecureStore.setItemAsync(TOKEN_KEY, t);
+    await saveToken(t);
     setToken(t);
   }, []);
 
   const logout = useCallback(async () => {
-    await SecureStore.deleteItemAsync(TOKEN_KEY).catch(() => {});
+    await clearToken().catch(() => {});
     setToken(null);
   }, []);
 

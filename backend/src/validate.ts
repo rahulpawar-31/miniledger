@@ -23,11 +23,11 @@ export function validFriendName(input: unknown): string {
 }
 
 export function validAmount(input: unknown): number {
-  const amount = Number(input);
+  const amount = Math.round(Number(input) * 100) / 100; // keep 2 decimal places
   if (!Number.isFinite(amount) || amount <= 0 || amount > 1_000_000_000) {
     throw new HttpError(400, "amount must be a number greater than 0");
   }
-  return Math.round(amount * 100) / 100; // keep 2 decimal places
+  return amount;
 }
 
 export function validDate(input: unknown): string {

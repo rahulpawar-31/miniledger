@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS otps (
   code       TEXT NOT NULL,
   expires_at TIMESTAMPTZ NOT NULL
 );
+-- Wrong guesses so far for the current code (added later, so it is safe to re-run on an old database).
+ALTER TABLE otps ADD COLUMN IF NOT EXISTS attempts INTEGER NOT NULL DEFAULT 0;
 
 CREATE TABLE IF NOT EXISTS loans (
   id          SERIAL PRIMARY KEY,

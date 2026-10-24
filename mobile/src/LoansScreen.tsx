@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Alert, FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from "react-native";
+import { Alert, FlatList, Platform, Pressable, RefreshControl, StyleSheet, Text, View } from "react-native";
 import { AuthError, addLoan, getLoans, getSummary, markRepaid, type Loan, type Summary } from "./api";
 import AddLoanForm from "./AddLoanForm";
 import { rupees } from "./money";
@@ -38,21 +38,26 @@ export default function LoansScreen({ token, onLogout }: Props) {
     await load();
   }
 
+  async function repay(loan: Loan) {
+    try {
+      await markRepaid(token, loan.id);
+      await load();
+    } catch (e) {
+      if (e instanceof AuthError) return onLogout();
+      Alert.alert("Error", e instanceof Error ? e.message : "Something went wrong");
+    }
+  }
+
   function confirmRepaid(loan: Loan) {
-    Alert.alert("Mark as repaid?", `${loan.friendName} paid back ${rupees(loan.amount)}.`, [
+    const question = `${loan.friendName} paid back ${rupees(loan.amount)}.`;
+    // Alert.alert with buttons does nothing in a web browser, so the browser test uses confirm().
+    if (Platform.OS === "web") {
+      if (window.confirm(`Mark as repaid? ${question}`)) repay(loan);
+      return;
+    }
+    Alert.alert("Mark as repaid?", question, [
       { text: "Cancel", style: "cancel" },
-      {
-        text: "Yes",
-        onPress: async () => {
-          try {
-            await markRepaid(token, loan.id);
-            await load();
-          } catch (e) {
-            if (e instanceof AuthError) return onLogout();
-            Alert.alert("Error", e instanceof Error ? e.message : "Something went wrong");
-          }
-        },
-      },
+      { text: "Yes", onPress: () => repay(loan) },
     ]);
   }
 

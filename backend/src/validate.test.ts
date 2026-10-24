@@ -22,6 +22,7 @@ test("amount must be a positive number, rounded to 2 decimals", () => {
   rejects(() => validAmount(0));
   rejects(() => validAmount(-5));
   rejects(() => validAmount("abc"));
+  rejects(() => validAmount(0.004)); // rounds to 0.00, which the database would refuse
 });
 
 test("due date must be a real YYYY-MM-DD date", () => {
